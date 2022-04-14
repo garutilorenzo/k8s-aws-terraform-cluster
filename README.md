@@ -9,7 +9,23 @@
 
 # Deploy Kubernetes on Amazon AWS
 
-Deploy in a few minutes an high available Kubernetes cluster on Amazon AWS using mixed on-demand and spot instances
+Deploy in a few minutes an high available Kubernetes cluster on Amazon AWS using mixed on-demand and spot instances.
+
+Please **note**, this is only an examle on how to Deploy a Kubernetes cluster. For a production environment you should use [EKS](https://aws.amazon.com/eks/) or [ECS](https://aws.amazon.com/it/ecs/).
+
+The scope of this repo si to show all the AWS components needed to deploy a high available K8s cluster.
+
+# Table of Contents
+
+* [Requirements](#requirements)
+* [Infrastructure overview](#infrastructure-overview)
+* [Before you start](#before-you-start)
+* [Project setup](#project-setup)
+* [AWS provider setup](#aws-provider-setup)
+* [Pre flight checklist](#pre-flight-checklist)
+* [Deploy](#deploy)
+* [Deploy a sample stack](#deploy-a-sample-stack)
+* [Clean up](#clean-up)
 
 ## Requirements
 
@@ -41,6 +57,14 @@ The final infrastructure will be made by:
 * one certificate used by the public LB, stored on AWS ACM. The certificate is a self signed certificate.
 
 ![k8s infra](https://garutilorenzo.github.io/images/k8s-infra.png?)
+
+## Kubernetes setup
+
+The installation of K8s id done by [kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/). In this installation [Containerd](https://containerd.io/) is used as CRI and [flannel](https://github.com/flannel-io/flannel) is used as CNI.
+
+You can optionally install [Nginx ingress controller](https://kubernetes.github.io/ingress-nginx/) and [Longhorn](#https://longhorn.io/).
+
+To install Nginx ingress set the variable *install_nginx_ingress* to yes (default no). To install longhorn set the variable *install_longhorn* to yes (default no). **NOTE** if you don't install the nginx ingress, the public Load Balancer and the SSL certificate won't be deployed.
 
 ## Before you start
 
@@ -549,7 +573,10 @@ curl -k -v https://k8s-ext-<REDACTED>.elb.amazonaws.com/
 
 ## Deploy a sample stack
 
-Finally to test all the components of the cluster we can deploy a sample stack. The stack is composed by the following components:
+We use the same stack used in [this](https://github.com/garutilorenzo/k3s-oci-cluster) repository.
+This stack **need** longhorn and nginx ingress.
+
+To test all the components of the cluster we can deploy a sample stack. The stack is composed by the following components:
 
 * MariaDB
 * Nginx
@@ -561,12 +588,22 @@ Wordpress and nginx share the same persistent volume (ReadWriteMany with longhor
 Deploy the resources with:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/mariadb/all-resources.yml
-kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/nginx/all-resources.yml
-kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/wordpress/all-resources.yml
+kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/mariadb/all-resources.yml
+kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/nginx/all-resources.yml
+kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/wordpress/all-resources.yml
 ```
 
-and check the status:
+**NOTE** to install WP and reach the *wp-admin* path you have to edit the nginx deployment and change this line:
+
+```yaml
+ env:
+  - name: SECURE_SUBNET
+    value: 8.8.8.8/32 # change-me
+```
+
+and set your public ip address.
+
+To check the status:
 
 ```
 root@i-04d089ed896cfafe1:~# kubectl get pods -o wide
@@ -596,9 +633,9 @@ Now you are ready to setup WP, open the LB public ip and follow the wizard. **NO
 To clean the deployed resources:
 
 ```
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/mariadb/all-resources.yml
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/nginx/all-resources.yml
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k8s-oci-cluster/master/deployments/wordpress/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/mariadb/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/nginx/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/wordpress/all-resources.yml
 ```
 
 ## Clean up
