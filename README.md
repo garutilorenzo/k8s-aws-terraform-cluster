@@ -26,6 +26,7 @@ The scope of this repo si to show all the AWS components needed to deploy a high
 * [Deploy](#deploy)
 * [Deploy a sample stack](#deploy-a-sample-stack)
 * [Clean up](#clean-up)
+* [Todo](#todo)
 
 ## Requirements
 
@@ -65,6 +66,8 @@ The installation of K8s id done by [kubeadm](https://kubernetes.io/docs/setup/pr
 You can optionally install [Nginx ingress controller](https://kubernetes.github.io/ingress-nginx/) and [Longhorn](#https://longhorn.io/).
 
 To install Nginx ingress set the variable *install_nginx_ingress* to yes (default no). To install longhorn set the variable *install_longhorn* to yes (default no). **NOTE** if you don't install the nginx ingress, the public Load Balancer and the SSL certificate won't be deployed.
+
+In this installation is used a S3 bucket to store the join certificate/token. At the first startup of the instance, if the cluster does not exist, the S3 bucket is used to get the join certificates/token.
 
 ## Before you start
 
@@ -640,6 +643,14 @@ kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluste
 
 ## Clean up
 
+Before destroy all the infrastructure **DELETE** all the object in the S3 bucket.
+
 ```
 terraform destroy
 ```
+
+## TODO
+
+* Extend the IAM role for the cluster autoscaler
+* Install the node termination handler for the EC2 spot instances
+* Auto update the certificate/token on the S3 bucket, at the moment the certificate i generated only once.
