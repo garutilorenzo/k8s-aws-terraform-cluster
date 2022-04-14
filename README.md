@@ -11,9 +11,9 @@
 
 Deploy in a few minutes an high available Kubernetes cluster on Amazon AWS using mixed on-demand and spot instances.
 
-Please **note**, this is only an examle on how to Deploy a Kubernetes cluster. For a production environment you should use [EKS](https://aws.amazon.com/eks/) or [ECS](https://aws.amazon.com/it/ecs/).
+Please **note**, this is only an example on how to Deploy a Kubernetes cluster. For a production environment you should use [EKS](https://aws.amazon.com/eks/) or [ECS](https://aws.amazon.com/it/ecs/).
 
-The scope of this repo si to show all the AWS components needed to deploy a high available K8s cluster.
+The scope of this repo is to show all the AWS components needed to deploy a high available K8s cluster.
 
 # Table of Contents
 
