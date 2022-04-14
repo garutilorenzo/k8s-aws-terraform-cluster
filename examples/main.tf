@@ -25,6 +25,7 @@ module "k8s-cluster" {
   PATH_TO_PUBLIC_LB_CERT = "<PAHT_TO_PUBLIC_LB_CERT>"
   PATH_TO_PUBLIC_LB_KEY  = "<PAHT_TO_PRIVATE_LB_CERT>"
   install_nginx_ingress  = true
+  install_longhorn       = true
   source                 = "github.com/garutilorenzo/k8s-aws-terraform-cluster"
 }
 
